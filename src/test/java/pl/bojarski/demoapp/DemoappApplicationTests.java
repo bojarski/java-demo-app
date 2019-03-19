@@ -34,7 +34,7 @@ public class DemoappApplicationTests {
 
         //then
         Assertions.assertThat(response.getStatusCodeValue()).isEqualTo(200);
-        Assertions.assertThat(response.getBody()).isEqualTo("Hello World!");
+        Assertions.assertThat(response.getBody()).isEqualTo("Hello heroku World!");
 
     }
 }
