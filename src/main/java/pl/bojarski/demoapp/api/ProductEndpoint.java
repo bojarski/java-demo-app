@@ -26,4 +26,11 @@ class ProductEndpoint {
     ProductResponseDto getProduct(@PathVariable("id") String id) {
         return productFacade.findById(id);
     }
+
+    @PostMapping("/{id}")
+    ProductResponseDto updateProduct(@PathVariable("id") String id,
+                                     @RequestBody ProductRequestDto productRequestDto) {
+
+        return productFacade.update(id, productRequestDto);
+    }
 }

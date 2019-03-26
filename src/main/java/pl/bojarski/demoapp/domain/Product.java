@@ -27,6 +27,10 @@ public final class Product {
         return createdAt;
     }
 
+    public Product name(String updatedName) {
+        return new Product(this.id, updatedName, this.getCreatedAt());
+    }
+
     @Override
     public String toString() {
         return "Product{" +

@@ -28,7 +28,7 @@ public class ProductEndpointTest extends DemoappApplicationTests {
         //when
         ResponseEntity<ProductResponseDto> result = httpClient.postForEntity(url,
                 getHttpRequest(productJson), ProductResponseDto.class);
-        
+
         //then
         assertThat(result.getStatusCodeValue()).isEqualTo(200);
         assertThat(result.getBody().getName()).isEqualTo("iphone");
@@ -42,11 +42,12 @@ public class ProductEndpointTest extends DemoappApplicationTests {
         final String url = "http://localhost:" + port + "/products/" + existingProduct.getId();
 
         //when
-        ResponseEntity<ProductResponseDto> results = httpClient.getForEntity(url, ProductResponseDto.class);
+        ResponseEntity<ProductResponseDto> result = httpClient.getForEntity(url,
+                ProductResponseDto.class);
 
         //then
-        assertThat(results.getStatusCodeValue()).isEqualTo(200);
-        assertThat(results.getBody()).isEqualToComparingFieldByFieldRecursively(existingProduct);
+        assertThat(result.getStatusCodeValue()).isEqualTo(200);
+        assertThat(result.getBody()).isEqualToComparingFieldByFieldRecursively(existingProduct);
     }
 
     @Test
@@ -55,10 +56,51 @@ public class ProductEndpointTest extends DemoappApplicationTests {
         final String url = "http://localhost:" + port + "/products/" + -1;
 
         //when
-        ResponseEntity<String> results = httpClient.getForEntity(url, String.class);
+        ResponseEntity<String> result = httpClient.getForEntity(url, String.class);
 
         //then
-        assertThat(results.getStatusCodeValue()).isEqualTo(404);
+        assertThat(result.getStatusCodeValue()).isEqualTo(404);
+    }
+
+    @Test
+    public void shouldUpdateProduct() {
+        //given
+        ProductRequestDto requestDto = new ProductRequestDto("iphone");
+        ProductResponseDto existingProduct = productFacade.create(requestDto);
+
+        final ProductRequestDto updatedRequestDto = new ProductRequestDto("samsung");
+        String productJson = mapToJson(updatedRequestDto);
+
+        final String url = "http://localhost:" + port + "/products/" + existingProduct.getId();
+
+        //when
+        ResponseEntity<ProductResponseDto> result = httpClient.postForEntity(url,
+                getHttpRequest(productJson), ProductResponseDto.class);
+
+        //then
+        ProductResponseDto updatedProduct = productFacade.findById(existingProduct.getId());
+
+        assertThat(result.getStatusCodeValue()).isEqualTo(200);
+        assertThat(updatedProduct.getName()).isEqualTo(updatedRequestDto.getName());
+    }
+
+    @Test
+    public void shouldDeleteProduct() {
+        //given
+        ProductRequestDto requestDto = new ProductRequestDto("iphone");
+        ProductResponseDto existingProduct = productFacade.create(requestDto);
+
+        final ProductRequestDto updatedProduct = new ProductRequestDto("samsung");
+        String productJson = mapToJson(updatedProduct);
+
+        final String url = "http://localhost:" + port + "/products/" + existingProduct.getId();
+
+        //when
+        ResponseEntity<ProductResponseDto> result = httpClient.postForEntity(url,
+                getHttpRequest(productJson), ProductResponseDto.class);
+
+        //then
+        assertThat(result.getStatusCodeValue()).isEqualTo(200);
     }
 
     private String mapToJson(ProductRequestDto productRequestDto) {

@@ -20,17 +20,6 @@ public class ProductFacadeImpl implements ProductFacade {
     }
 
     @Override
-    public ProductResponseDto findById(String id) {
-        Product product = productRepository.findById(id);
-
-        if (isNull(product)) {
-            throw new NullPointerException("Product not found with id " + id);
-        }
-
-        return new ProductResponseDto(product.getId(), product.getName());
-    }
-
-    @Override
     public ProductResponseDto create(ProductRequestDto productRequest) {
 
         if (!productRequest.isValid()) {
@@ -49,5 +38,37 @@ public class ProductFacadeImpl implements ProductFacade {
         );
 
         return productResponse;
+    }
+
+    @Override
+    public ProductResponseDto findById(String id) {
+        Product product = findProductById(id);
+
+        return new ProductResponseDto(product.getId(), product.getName());
+    }
+
+    @Override
+    public ProductResponseDto update(String id, ProductRequestDto productRequest) {
+        Product product = findProductById(id);
+        Product updatedProduct = product.name(productRequest.getName());
+
+        productRepository.save(updatedProduct );
+
+        return new ProductResponseDto(updatedProduct.getId(), updatedProduct.getName());
+    }
+
+    @Override
+    public ProductResponseDto delete(String id) {
+        return null;
+    }
+
+    private Product findProductById(String id) {
+        Product product = productRepository.findById(id);
+
+        if (isNull(product)) {
+            throw new NullPointerException("Product does not exist where id = " + id);
+        }
+
+        return product;
     }
 }
