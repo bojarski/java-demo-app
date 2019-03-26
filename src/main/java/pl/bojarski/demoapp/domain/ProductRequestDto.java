@@ -1,9 +1,12 @@
 package pl.bojarski.demoapp.domain;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.Strings;
 
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ProductRequestDto {
 
     private final String name;

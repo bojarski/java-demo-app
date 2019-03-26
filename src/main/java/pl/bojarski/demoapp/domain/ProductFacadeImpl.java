@@ -18,6 +18,12 @@ public class ProductFacadeImpl implements ProductFacade {
     }
 
     @Override
+    public ProductResponseDto findById(String id) {
+        Product product = productRepository.findById(id);
+        return new ProductResponseDto(product.getId(), product.getName());
+    }
+
+    @Override
     public ProductResponseDto create(ProductRequestDto productRequest) {
 
         if (!productRequest.isValid()) {
