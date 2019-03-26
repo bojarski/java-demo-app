@@ -7,6 +7,8 @@ import pl.bojarski.demoapp.infrastucture.ProductRepository;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+import static java.util.Objects.isNull;
+
 @Component
 public class ProductFacadeImpl implements ProductFacade {
 
@@ -20,6 +22,11 @@ public class ProductFacadeImpl implements ProductFacade {
     @Override
     public ProductResponseDto findById(String id) {
         Product product = productRepository.findById(id);
+
+        if (isNull(product)) {
+            throw new NullPointerException("Product not found with id " + id);
+        }
+
         return new ProductResponseDto(product.getId(), product.getName());
     }
 

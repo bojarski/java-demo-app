@@ -28,6 +28,7 @@ public class ProductEndpointTest extends DemoappApplicationTests {
         //when
         ResponseEntity<ProductResponseDto> result = httpClient.postForEntity(url,
                 getHttpRequest(productJson), ProductResponseDto.class);
+        
         //then
         assertThat(result.getStatusCodeValue()).isEqualTo(200);
         assertThat(result.getBody().getName()).isEqualTo("iphone");
@@ -39,11 +40,25 @@ public class ProductEndpointTest extends DemoappApplicationTests {
         ProductRequestDto requestDto = new ProductRequestDto("product");
         ProductResponseDto existingProduct = productFacade.create(requestDto);
         final String url = "http://localhost:" + port + "/products/" + existingProduct.getId();
+
         //when
         ResponseEntity<ProductResponseDto> results = httpClient.getForEntity(url, ProductResponseDto.class);
+
         //then
         assertThat(results.getStatusCodeValue()).isEqualTo(200);
         assertThat(results.getBody()).isEqualToComparingFieldByFieldRecursively(existingProduct);
+    }
+
+    @Test
+    public void shouldGetNotExistProduct() {
+        //given
+        final String url = "http://localhost:" + port + "/products/" + -1;
+
+        //when
+        ResponseEntity<String> results = httpClient.getForEntity(url, String.class);
+
+        //then
+        assertThat(results.getStatusCodeValue()).isEqualTo(404);
     }
 
     private String mapToJson(ProductRequestDto productRequestDto) {
