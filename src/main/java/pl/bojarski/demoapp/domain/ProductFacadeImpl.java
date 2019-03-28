@@ -52,14 +52,18 @@ public class ProductFacadeImpl implements ProductFacade {
         Product product = findProductById(id);
         Product updatedProduct = product.name(productRequest.getName());
 
-        productRepository.save(updatedProduct );
+        productRepository.save(updatedProduct);
 
         return new ProductResponseDto(updatedProduct.getId(), updatedProduct.getName());
     }
 
     @Override
     public ProductResponseDto delete(String id) {
-        return null;
+        Product product = findProductById(id);
+
+        productRepository.remove(id);
+
+        return new ProductResponseDto(product.getId(), product.getName());
     }
 
     private Product findProductById(String id) {

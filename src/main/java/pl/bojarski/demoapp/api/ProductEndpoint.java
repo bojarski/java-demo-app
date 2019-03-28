@@ -27,10 +27,15 @@ class ProductEndpoint {
         return productFacade.findById(id);
     }
 
-    @PostMapping("/{id}")
+    @PutMapping("/{id}")
     ProductResponseDto updateProduct(@PathVariable("id") String id,
                                      @RequestBody ProductRequestDto productRequestDto) {
 
         return productFacade.update(id, productRequestDto);
+    }
+
+    @DeleteMapping("/{id}")
+    ProductResponseDto deleteProduct(@PathVariable("id") String id) {
+        return productFacade.delete(id);
     }
 }

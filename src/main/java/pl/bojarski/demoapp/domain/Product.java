@@ -28,7 +28,7 @@ public final class Product {
     }
 
     public Product name(String updatedName) {
-        return new Product(this.id, updatedName, this.getCreatedAt());
+        return new Product(this.id, updatedName, this.createdAt);
     }
 
     @Override

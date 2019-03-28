@@ -12,6 +12,8 @@ import pl.bojarski.demoapp.domain.ProductRequestDto;
 import pl.bojarski.demoapp.domain.ProductResponseDto;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.http.HttpMethod.DELETE;
+import static org.springframework.http.HttpMethod.PUT;
 
 public class ProductEndpointTest extends DemoappApplicationTests {
 
@@ -74,13 +76,13 @@ public class ProductEndpointTest extends DemoappApplicationTests {
         final String url = "http://localhost:" + port + "/products/" + existingProduct.getId();
 
         //when
-        ResponseEntity<ProductResponseDto> result = httpClient.postForEntity(url,
+        ResponseEntity<ProductResponseDto> response = httpClient.exchange(url, PUT,
                 getHttpRequest(productJson), ProductResponseDto.class);
 
         //then
         ProductResponseDto updatedProduct = productFacade.findById(existingProduct.getId());
 
-        assertThat(result.getStatusCodeValue()).isEqualTo(200);
+        assertThat(response.getStatusCodeValue()).isEqualTo(200);
         assertThat(updatedProduct.getName()).isEqualTo(updatedRequestDto.getName());
     }
 
@@ -90,17 +92,18 @@ public class ProductEndpointTest extends DemoappApplicationTests {
         ProductRequestDto requestDto = new ProductRequestDto("iphone");
         ProductResponseDto existingProduct = productFacade.create(requestDto);
 
-        final ProductRequestDto updatedProduct = new ProductRequestDto("samsung");
-        String productJson = mapToJson(updatedProduct);
-
-        final String url = "http://localhost:" + port + "/products/" + existingProduct.getId();
+        final String deleteUrl = "http://localhost:" + port + "/products/" + existingProduct.getId();
+        final String getUrl = "http://localhost:" + port + "/products/" + existingProduct.getId();
 
         //when
-        ResponseEntity<ProductResponseDto> result = httpClient.postForEntity(url,
-                getHttpRequest(productJson), ProductResponseDto.class);
+        ResponseEntity<ProductResponseDto> responseDelete = httpClient.exchange(deleteUrl, DELETE,
+                null, ProductResponseDto.class);
+        ResponseEntity<String> getResponse = httpClient.getForEntity(getUrl, String.class);
 
         //then
-        assertThat(result.getStatusCodeValue()).isEqualTo(200);
+        assertThat(responseDelete.getStatusCodeValue()).isEqualTo(200);
+        assertThat(getResponse.getStatusCodeValue()).isEqualTo(404);
+
     }
 
     private String mapToJson(ProductRequestDto productRequestDto) {

@@ -20,4 +20,9 @@ public class InMemoryProductRepository implements ProductRepository {
     public Product findById(String id) {
         return products.get(id);
     }
+
+    @Override
+    public void remove(String id) {
+        products.remove(id);
+    }
 }

@@ -8,4 +8,6 @@ public interface ProductRepository {
 
     //SPEL
     Product findById(String id);
+
+    void remove(String id);
 }
