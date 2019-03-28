@@ -12,8 +12,7 @@ public class ProductRequestDto {
     private final String name;
 
     @JsonCreator
-    public ProductRequestDto(
-            @JsonProperty("name") String name) {
+    public ProductRequestDto(@JsonProperty("name") String name) {
         this.name = name;
     }
 
