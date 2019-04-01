@@ -6,7 +6,7 @@ public interface ProductFacade {
 
     ProductResponseDto findById(String id);
 
-    ProductResponseDto update(String id, ProductRequestDto productRequest);
+    ProductResponseDto update(ProductUpdateRequestDto productUpdateRequestDto);
 
-    ProductResponseDto delete(String id);
+    void delete(String id);
 }

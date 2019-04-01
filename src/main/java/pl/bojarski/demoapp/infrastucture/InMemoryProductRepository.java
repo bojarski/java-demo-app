@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Repository
-public class InMemoryProductRepository implements ProductRepository {
+class InMemoryProductRepository implements ProductRepository {
 
     private final Map<String, Product> products = new HashMap<>();
 

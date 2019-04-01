@@ -10,7 +10,7 @@ import java.util.UUID;
 import static java.util.Objects.isNull;
 
 @Component
-public class ProductFacadeImpl implements ProductFacade {
+class ProductFacadeImpl implements ProductFacade {
 
     private final ProductRepository productRepository;
 
@@ -48,9 +48,14 @@ public class ProductFacadeImpl implements ProductFacade {
     }
 
     @Override
-    public ProductResponseDto update(String id, ProductRequestDto productRequest) {
-        Product product = findProductById(id);
-        Product updatedProduct = product.name(productRequest.getName());
+    public ProductResponseDto update(ProductUpdateRequestDto productUpdateRequestDto) {
+
+        if (!productUpdateRequestDto.isValid()) {
+            throw new RuntimeException("Product id or name cannot be empty!");
+        }
+
+        Product product = findProductById(productUpdateRequestDto.getId());
+        Product updatedProduct = product.name(productUpdateRequestDto.getName());
 
         productRepository.save(updatedProduct);
 
@@ -58,19 +63,15 @@ public class ProductFacadeImpl implements ProductFacade {
     }
 
     @Override
-    public ProductResponseDto delete(String id) {
-        Product product = findProductById(id);
-
+    public void delete(String id) {
         productRepository.remove(id);
-
-        return new ProductResponseDto(product.getId(), product.getName());
     }
 
     private Product findProductById(String id) {
         Product product = productRepository.findById(id);
 
         if (isNull(product)) {
-            throw new NullPointerException("Product does not exist where id = " + id);
+            throw new ProductValidationException("Product does not exist where id = " + id);
         }
 
         return product;

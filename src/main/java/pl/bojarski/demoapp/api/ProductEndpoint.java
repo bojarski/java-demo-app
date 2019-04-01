@@ -5,9 +5,10 @@ import org.springframework.web.bind.annotation.*;
 import pl.bojarski.demoapp.domain.ProductFacade;
 import pl.bojarski.demoapp.domain.ProductRequestDto;
 import pl.bojarski.demoapp.domain.ProductResponseDto;
+import pl.bojarski.demoapp.domain.ProductUpdateRequestDto;
 
 @RestController
-@RequestMapping("/products")
+@RequestMapping("/api/v1/products")
 class ProductEndpoint {
 
     private final ProductFacade productFacade;
@@ -27,15 +28,13 @@ class ProductEndpoint {
         return productFacade.findById(id);
     }
 
-    @PutMapping("/{id}")
-    ProductResponseDto updateProduct(@PathVariable("id") String id,
-                                     @RequestBody ProductRequestDto productRequestDto) {
-
-        return productFacade.update(id, productRequestDto);
+    @PutMapping
+    ProductResponseDto updateProduct(@RequestBody ProductUpdateRequestDto productUpdateRequestDto) {
+        return productFacade.update(productUpdateRequestDto);
     }
 
     @DeleteMapping("/{id}")
-    ProductResponseDto deleteProduct(@PathVariable("id") String id) {
-        return productFacade.delete(id);
+    void deleteProduct(@PathVariable("id") String id) {
+        productFacade.delete(id);
     }
 }

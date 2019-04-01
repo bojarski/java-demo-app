@@ -10,6 +10,7 @@ import pl.bojarski.demoapp.DemoappApplicationTests;
 import pl.bojarski.demoapp.domain.ProductFacade;
 import pl.bojarski.demoapp.domain.ProductRequestDto;
 import pl.bojarski.demoapp.domain.ProductResponseDto;
+import pl.bojarski.demoapp.domain.ProductUpdateRequestDto;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpMethod.DELETE;
@@ -23,7 +24,7 @@ public class ProductEndpointTest extends DemoappApplicationTests {
     @Test
     public void shouldCreateProduct() {
         //given
-        final String url = "http://localhost:" + port + "/products";
+        final String url = "http://localhost:" + port + "/api/v1/products";
         final ProductRequestDto product = new ProductRequestDto("iphone");
         String productJson = mapToJson(product);
 
@@ -41,7 +42,7 @@ public class ProductEndpointTest extends DemoappApplicationTests {
         //given
         ProductRequestDto requestDto = new ProductRequestDto("product");
         ProductResponseDto existingProduct = productFacade.create(requestDto);
-        final String url = "http://localhost:" + port + "/products/" + existingProduct.getId();
+        final String url = "http://localhost:" + port + "/api/v1/products/" + existingProduct.getId();
 
         //when
         ResponseEntity<ProductResponseDto> result = httpClient.getForEntity(url,
@@ -55,7 +56,7 @@ public class ProductEndpointTest extends DemoappApplicationTests {
     @Test
     public void shouldGetNotExistProduct() {
         //given
-        final String url = "http://localhost:" + port + "/products/" + -1;
+        final String url = "http://localhost:" + port + "/api/v1/products/" + -1;
 
         //when
         ResponseEntity<String> result = httpClient.getForEntity(url, String.class);
@@ -70,10 +71,10 @@ public class ProductEndpointTest extends DemoappApplicationTests {
         ProductRequestDto requestDto = new ProductRequestDto("iphone");
         ProductResponseDto existingProduct = productFacade.create(requestDto);
 
-        final ProductRequestDto updatedRequestDto = new ProductRequestDto("samsung");
-        String productJson = mapToJson(updatedRequestDto);
+        final ProductUpdateRequestDto productUpdateRequestDto = new ProductUpdateRequestDto(existingProduct.getId(), "samsung");
+        String productJson = mapToJson(productUpdateRequestDto);
 
-        final String url = "http://localhost:" + port + "/products/" + existingProduct.getId();
+        final String url = "http://localhost:" + port + "/api/v1/products";
 
         //when
         ResponseEntity<ProductResponseDto> response = httpClient.exchange(url, PUT,
@@ -83,7 +84,7 @@ public class ProductEndpointTest extends DemoappApplicationTests {
         ProductResponseDto updatedProduct = productFacade.findById(existingProduct.getId());
 
         assertThat(response.getStatusCodeValue()).isEqualTo(200);
-        assertThat(updatedProduct.getName()).isEqualTo(updatedRequestDto.getName());
+        assertThat(updatedProduct.getName()).isEqualTo(productUpdateRequestDto.getName());
     }
 
     @Test
@@ -92,8 +93,8 @@ public class ProductEndpointTest extends DemoappApplicationTests {
         ProductRequestDto requestDto = new ProductRequestDto("iphone");
         ProductResponseDto existingProduct = productFacade.create(requestDto);
 
-        final String deleteUrl = "http://localhost:" + port + "/products/" + existingProduct.getId();
-        final String getUrl = "http://localhost:" + port + "/products/" + existingProduct.getId();
+        final String deleteUrl = "http://localhost:" + port + "/api/v1/products/" + existingProduct.getId();
+        final String getUrl = "http://localhost:" + port + "/api/v1/products/" + existingProduct.getId();
 
         //when
         ResponseEntity<ProductResponseDto> responseDelete = httpClient.exchange(deleteUrl, DELETE,
@@ -106,9 +107,9 @@ public class ProductEndpointTest extends DemoappApplicationTests {
 
     }
 
-    private String mapToJson(ProductRequestDto productRequestDto) {
+    private String mapToJson(Object requestDto) {
         try {
-            return objectMapper.writeValueAsString(productRequestDto);
+            return objectMapper.writeValueAsString(requestDto);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
