@@ -5,7 +5,9 @@ import org.springframework.stereotype.Component;
 import pl.bojarski.demoapp.infrastucture.ProductRepository;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static java.util.Objects.isNull;
 
@@ -38,6 +40,17 @@ class ProductFacadeImpl implements ProductFacade {
         );
 
         return productResponse;
+    }
+
+    @Override
+    public ProductsResponseDto findAll() {
+        List<Product> products = productRepository.findAll();
+
+        List<ProductResponseDto> productsReponse = products.stream()
+                .map(ProductResponseDto::new)
+                .collect(Collectors.toList());
+
+        return new ProductsResponseDto(productsReponse);
     }
 
     @Override
