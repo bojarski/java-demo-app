@@ -1,6 +1,7 @@
 package pl.bojarski.demoapp.domain;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.Strings;
@@ -20,6 +21,7 @@ public class ProductRequestDto {
         return name;
     }
 
+    @JsonIgnore
     public boolean isValid() {
         return !Strings.isNullOrEmpty(name);
     }
