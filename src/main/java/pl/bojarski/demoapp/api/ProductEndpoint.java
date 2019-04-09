@@ -2,10 +2,7 @@ package pl.bojarski.demoapp.api;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import pl.bojarski.demoapp.domain.ProductFacade;
-import pl.bojarski.demoapp.domain.ProductRequestDto;
-import pl.bojarski.demoapp.domain.ProductResponseDto;
-import pl.bojarski.demoapp.domain.ProductUpdateRequestDto;
+import pl.bojarski.demoapp.domain.*;
 
 @RestController
 @RequestMapping("/api/v1/products")
@@ -21,6 +18,11 @@ class ProductEndpoint {
     @PostMapping
     ProductResponseDto createProduct(@RequestBody ProductRequestDto productRequestDto) {
         return productFacade.create(productRequestDto);
+    }
+
+    @GetMapping
+    ProductsResponseDto getAllProducts() {
+        return productFacade.findAll();
     }
 
     @GetMapping("/{id}")
