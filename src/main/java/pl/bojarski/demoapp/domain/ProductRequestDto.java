@@ -6,30 +6,69 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.Strings;
 
+import java.util.List;
+
+import static java.util.Objects.nonNull;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ProductRequestDto {
 
     private final String name;
+    private final PriceDto price;
+    private final ImageDto imageDto;
+    private final DescriptionDto descriptionDto;
+    private final List<TagDto> tags;
 
     @JsonCreator
-    public ProductRequestDto(@JsonProperty("name") String name) {
+    public ProductRequestDto(@JsonProperty("name") String name,
+                             @JsonProperty("price") PriceDto price,
+                             @JsonProperty("image") ImageDto imageDto,
+                             @JsonProperty("descriptionDto") DescriptionDto descriptionDto,
+                             @JsonProperty("tags") List<TagDto> tags) {
+
         this.name = name;
+        this.price = price;
+        this.imageDto = imageDto;
+        this.descriptionDto = descriptionDto;
+        this.tags = tags;
+    }
+
+    @JsonIgnore
+    public boolean isValid() {
+        return !Strings.isNullOrEmpty(name)
+                && nonNull(price) && price.isValid()
+                && nonNull(descriptionDto) && descriptionDto.isValid()
+                && nonNull(tags) && tags.size() > 0;
     }
 
     public String getName() {
         return name;
     }
 
-    @JsonIgnore
-    public boolean isValid() {
-        return !Strings.isNullOrEmpty(name);
+    public PriceDto getPrice() {
+        return price;
+    }
+
+    public ImageDto getImageDto() {
+        return imageDto;
+    }
+
+    public DescriptionDto getDescriptionDto() {
+        return descriptionDto;
+    }
+
+    public List<TagDto> getTags() {
+        return tags;
     }
 
     @Override
     public String toString() {
         return "ProductRequestDto{" +
                 "name='" + name + '\'' +
+                ", price=" + price +
+                ", imageDto=" + imageDto +
+                ", descriptionDto=" + descriptionDto +
+                ", tags=" + tags +
                 '}';
     }
 }

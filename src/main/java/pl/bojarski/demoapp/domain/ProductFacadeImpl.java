@@ -2,12 +2,14 @@ package pl.bojarski.demoapp.domain;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import pl.bojarski.demoapp.exceptions.ProductNotFoundException;
+import pl.bojarski.demoapp.exceptions.ProductRequestNotValidException;
 import pl.bojarski.demoapp.infrastucture.ProductRepository;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import static java.util.Objects.isNull;
 
@@ -25,19 +27,30 @@ class ProductFacadeImpl implements ProductFacade {
     public ProductResponseDto create(ProductRequestDto productRequest) {
 
         if (!productRequest.isValid()) {
-            throw new RuntimeException("Product name cannot be empty!");
+            throw new ProductRequestNotValidException(productRequest);
         }
 
         String id = UUID.randomUUID().toString();
         LocalDateTime createdAt = LocalDateTime.now();
-        Product product = new Product(id, productRequest.getName(), createdAt);
+        Product product = new Product.Builder(id,
+                productRequest.getName(),
+                productRequest.getPrice(),
+                productRequest.getDescriptionDto(),
+                createdAt)
+                .withImage(productRequest.getImageDto())
+                .withTags(productRequest.getTags())
+                .build();
 
         productRepository.save(product);
 
-        ProductResponseDto productResponse = new ProductResponseDto(
-                product.getId(),
-                product.getName()
-        );
+        ProductResponseDto productResponse = new ProductResponseDto.Builder()
+                .withId(product.getId())
+                .withName(product.getName())
+                .withPrice(product.getPrice())
+                .withImage(product.getImage())
+                .withDescription(product.getDescription())
+                .withTags(product.getTags())
+                .build();
 
         return productResponse;
     }
@@ -45,10 +58,20 @@ class ProductFacadeImpl implements ProductFacade {
     @Override
     public ProductsResponseDto findAll() {
         List<Product> products = productRepository.findAll();
+        List<ProductResponseDto> productsReponse = new ArrayList<>();
 
-        List<ProductResponseDto> productsReponse = products.stream()
-                .map(ProductResponseDto::new)
-                .collect(Collectors.toList());
+        for (Product product : products) {
+            ProductResponseDto productResponseDto = new ProductResponseDto.Builder()
+                    .withId(product.getId())
+                    .withName(product.getName())
+                    .withPrice(product.getPrice())
+                    .withImage(product.getImage())
+                    .withDescription(product.getDescription())
+                    .withTags(product.getTags())
+                    .build();
+
+            productsReponse.add(productResponseDto);
+        }
 
         return new ProductsResponseDto(productsReponse);
     }
@@ -57,22 +80,43 @@ class ProductFacadeImpl implements ProductFacade {
     public ProductResponseDto findById(String id) {
         Product product = findProductById(id);
 
-        return new ProductResponseDto(product.getId(), product.getName());
+        return new ProductResponseDto.Builder()
+                .withId(product.getId())
+                .withName(product.getName())
+                .withPrice(product.getPrice())
+                .withImage(product.getImage())
+                .withDescription(product.getDescription())
+                .withTags(product.getTags())
+                .build();
     }
 
     @Override
     public ProductResponseDto update(ProductUpdateRequestDto productUpdateRequestDto) {
 
         if (!productUpdateRequestDto.isValid()) {
-            throw new RuntimeException("Product id or name cannot be empty!");
+            throw new ProductRequestNotValidException(productUpdateRequestDto);
         }
 
         Product product = findProductById(productUpdateRequestDto.getId());
-        Product updatedProduct = product.name(productUpdateRequestDto.getName());
+        Product updatedProduct = new Product.Builder(productUpdateRequestDto.getId(),
+                productUpdateRequestDto.getName(),
+                productUpdateRequestDto.getPrice(),
+                productUpdateRequestDto.getDescriptionDto(),
+                product.getCreatedAt())
+                .withImage(productUpdateRequestDto.getImageDto())
+                .withTags(productUpdateRequestDto.getTags())
+                .build();
 
         productRepository.save(updatedProduct);
 
-        return new ProductResponseDto(updatedProduct.getId(), updatedProduct.getName());
+        return new ProductResponseDto.Builder()
+                .withId(updatedProduct.getId())
+                .withName(updatedProduct.getName())
+                .withPrice(updatedProduct.getPrice())
+                .withImage(updatedProduct.getImage())
+                .withDescription(updatedProduct.getDescription())
+                .withTags(updatedProduct.getTags())
+                .build();
     }
 
     @Override
@@ -84,7 +128,7 @@ class ProductFacadeImpl implements ProductFacade {
         Product product = productRepository.findById(id);
 
         if (isNull(product)) {
-            throw new ProductValidationException("Product does not exist where id = " + id);
+            throw new ProductNotFoundException(id);
         }
 
         return product;
