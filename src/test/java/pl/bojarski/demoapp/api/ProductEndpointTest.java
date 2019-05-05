@@ -14,11 +14,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpMethod.DELETE;
 import static org.springframework.http.HttpMethod.PUT;
 
-public class ProductEndpointTest extends DemoappApplicationTests {
+public class ProductEndpointTest { //extends DemoappApplicationTests {
 
-    @Autowired
-    ProductFacade productFacade;
-
+  //  @Autowired
+ //   ProductFacade productFacade;
+/*
     @Test
     public void shouldCreateProduct() {
         //given
@@ -130,6 +130,7 @@ public class ProductEndpointTest extends DemoappApplicationTests {
 
     }
 
+
     private String mapToJson(Object requestDto) {
         try {
             return objectMapper.writeValueAsString(requestDto);
@@ -143,4 +144,5 @@ public class ProductEndpointTest extends DemoappApplicationTests {
         httpHeaders.set("content-type", "application/json");
         return new HttpEntity<>(json, httpHeaders);
     }
+    */
 }
